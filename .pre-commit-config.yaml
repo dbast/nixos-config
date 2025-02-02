@@ -1,0 +1,33 @@
+# Apply to all files without commiting:
+#   pre-commit run --all-files
+# Update this file:
+#   pre-commit autoupdate
+repos:
+  - repo: https://github.com/kamadorueda/alejandra
+    rev: 3.1.0
+    hooks:
+      - id: alejandra-system
+  - repo: local
+    hooks:
+      - id: statix-fix
+        name: statix-fix
+        language: system
+        entry: statix fix .
+        files: \.nix$
+        pass_filenames: false
+      - id: statix-check
+        name: statix-check
+        language: system
+        entry: statix check .
+        files: \.nix$
+        pass_filenames: false
+      - id: deadnix
+        name: deadnix
+        language: system
+        entry: deadnix
+        files: \.nix$
+        pass_filenames: false
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes

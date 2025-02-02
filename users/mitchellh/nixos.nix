@@ -1,8 +1,10 @@
-{ pkgs, inputs, ... }:
-
 {
+  pkgs,
+  inputs,
+  ...
+}: {
   # https://github.com/nix-community/home-manager/pull/2408
-  environment.pathsToLink = [ "/share/fish" ];
+  environment.pathsToLink = ["/share/fish"];
 
   # Add ~/.local/bin to PATH
   environment.localBinInPath = true;
@@ -13,7 +15,7 @@
   users.users.mitchellh = {
     isNormalUser = true;
     home = "/home/mitchellh";
-    extraGroups = [ "docker" "lxd" "wheel" ];
+    extraGroups = ["docker" "lxd" "wheel"];
     shell = pkgs.fish;
     hashedPassword = "$6$p5nPhz3G6k$6yCK0m3Oglcj4ZkUXwbjrG403LBZkfNwlhgrQAqOospGJXJZ27dI84CbIYBNsTgsoH650C1EBsbCKesSVPSpB1";
     openssh.authorizedKeys.keys = [
@@ -21,7 +23,9 @@
     ];
   };
 
-  nixpkgs.overlays = import ../../lib/overlays.nix ++ [
-    (import ./vim.nix { inherit inputs; })
-  ];
+  nixpkgs.overlays =
+    import ../../lib/overlays.nix
+    ++ [
+      (import ./vim.nix {inherit inputs;})
+    ];
 }
