@@ -1,8 +1,6 @@
-{ inputs }:
-
-self: super:
-
-let sources = import ../../nix/sources.nix; in rec {
+{inputs}: self: super: let
+  sources = import ../../nix/sources.nix;
+in rec {
   # My vim config
   customVim = with self; {
     vim-copilot = vimUtils.buildVimPlugin {
@@ -143,17 +141,19 @@ let sources = import ../../nix/sources.nix; in rec {
     };
   };
 
-  tree-sitter-proto = self.callPackage
-    (sources.nixpkgs + /pkgs/development/tools/parsing/tree-sitter/grammar.nix) { } {
-    language = "proto";
-    version  = "0.1.0";
-    source   = sources.tree-sitter-proto;
-  };
+  tree-sitter-proto =
+    self.callPackage
+    (sources.nixpkgs + /pkgs/development/tools/parsing/tree-sitter/grammar.nix) {} {
+      language = "proto";
+      version = "0.1.0";
+      source = sources.tree-sitter-proto;
+    };
 
-  tree-sitter-hcl = self.callPackage
-    (sources.nixpkgs + /pkgs/development/tools/parsing/tree-sitter/grammar.nix) { } {
-    language = "hcl";
-    version  = "0.1.0";
-    source   = sources.tree-sitter-hcl;
-  };
+  tree-sitter-hcl =
+    self.callPackage
+    (sources.nixpkgs + /pkgs/development/tools/parsing/tree-sitter/grammar.nix) {} {
+      language = "hcl";
+      version = "0.1.0";
+      source = sources.tree-sitter-hcl;
+    };
 }

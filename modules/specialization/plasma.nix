@@ -1,5 +1,5 @@
 # KDE Plasma (Wayland)
-{ pkgs, ... }: {
+{pkgs, ...}: {
   specialisation.plasma.configuration = {
     services.xserver.enable = true;
     services.displayManager.sddm.enable = true;

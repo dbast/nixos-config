@@ -48,7 +48,7 @@
     nvim-gitsigns.flake = false;
     nvim-lspconfig.url = "github:neovim/nvim-lspconfig";
     nvim-lspconfig.flake = false;
-    nvim-lualine.url ="github:nvim-lualine/lualine.nvim";
+    nvim-lualine.url = "github:nvim-lualine/lualine.nvim";
     nvim-lualine.flake = false;
     nvim-nui.url = "github:MunifTanjim/nui.nvim";
     nvim-nui.flake = false;
@@ -66,7 +66,13 @@
     vim-misc.flake = false;
   };
 
-  outputs = { self, nixpkgs, home-manager, darwin, ... }@inputs: let
+  outputs = {
+    self,
+    nixpkgs,
+    home-manager,
+    darwin,
+    ...
+  } @ inputs: let
     # Overlays is the list of overlays we want to apply from flake inputs.
     overlays = [
       inputs.jujutsu.overlays.default
@@ -74,7 +80,7 @@
 
       (final: prev: {
         # gh CLI on stable has bugs.
-        gh = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.gh;
+        inherit (inputs.nixpkgs-unstable.legacyPackages.${prev.system}) gh;
       })
     ];
 
@@ -84,34 +90,52 @@
   in {
     nixosConfigurations.vm-aarch64 = mkSystem "vm-aarch64" {
       system = "aarch64-linux";
-      user   = "mitchellh";
+      user = "mitchellh";
     };
 
     nixosConfigurations.vm-aarch64-prl = mkSystem "vm-aarch64-prl" rec {
       system = "aarch64-linux";
-      user   = "mitchellh";
+      user = "mitchellh";
     };
 
     nixosConfigurations.vm-aarch64-utm = mkSystem "vm-aarch64-utm" rec {
       system = "aarch64-linux";
-      user   = "mitchellh";
+      user = "mitchellh";
     };
 
     nixosConfigurations.vm-intel = mkSystem "vm-intel" rec {
       system = "x86_64-linux";
-      user   = "mitchellh";
+      user = "mitchellh";
     };
 
     nixosConfigurations.wsl = mkSystem "wsl" {
       system = "x86_64-linux";
-      user   = "mitchellh";
-      wsl    = true;
+      user = "mitchellh";
+      wsl = true;
     };
 
     darwinConfigurations.macbook-pro-m1 = mkSystem "macbook-pro-m1" {
       system = "aarch64-darwin";
-      user   = "mitchellh";
+      user = "mitchellh";
       darwin = true;
     };
+    devShells =
+      nixpkgs.lib.genAttrs
+      ["x86_64-linux" "aarch64-linux" "aarch64-darwin"]
+      (system: {
+        lint = nixpkgs.legacyPackages.${system}.mkShell {
+          buildInputs = [
+            inputs.nixpkgs-unstable.legacyPackages.${system}.pre-commit
+            inputs.nixpkgs-unstable.legacyPackages.${system}.alejandra
+            inputs.nixpkgs-unstable.legacyPackages.${system}.deadnix
+            inputs.nixpkgs-unstable.legacyPackages.${system}.statix
+          ];
+
+          shellHook = ''
+            echo "Running pre-commit checks..."
+            pre-commit run --all-files --verbose --show-diff-on-failure --color always
+          '';
+        };
+      });
   };
 }
