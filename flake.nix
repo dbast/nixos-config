@@ -64,6 +64,8 @@
     vim-copilot.flake = false;
     vim-misc.url = "github:mitchellh/vim-misc";
     vim-misc.flake = false;
+
+    pre-commit-hooks.url = "github:cachix/git-hooks.nix";
   };
 
   outputs = { self, nixpkgs, home-manager, darwin, ... }@inputs: let
@@ -113,5 +115,16 @@
       user   = "mitchellh";
       darwin = true;
     };
+    checks = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"]
+      (system: {
+        pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
+          src = ./.;
+          hooks = {
+            alejandra.enable = true;
+            deadnix.enable = true;
+            statix.enable = true;
+          };
+        };
+      });
   };
 }
